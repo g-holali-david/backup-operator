@@ -1,0 +1,40 @@
+apiVersion: backup.hdgavi.dev/v1alpha1
+kind: BackupSchedule
+metadata:
+  name: postgres-daily
+  namespace: default
+spec:
+  schedule: "0 2 * * *"          # Every day at 2am
+  pvcSelector:
+    matchLabels:
+      app: postgres
+  retention:
+    keepLast: 7
+  storageClass: gp3
+---
+apiVersion: backup.hdgavi.dev/v1alpha1
+kind: BackupSchedule
+metadata:
+  name: redis-hourly
+  namespace: default
+spec:
+  schedule: "0 * * * *"          # Every hour
+  pvcSelector:
+    matchLabels:
+      app: redis
+  retention:
+    keepLast: 24
+---
+apiVersion: backup.hdgavi.dev/v1alpha1
+kind: BackupSchedule
+metadata:
+  name: app-data-weekly
+  namespace: default
+spec:
+  schedule: "0 3 * * 0"          # Every Sunday at 3am
+  pvcSelector:
+    matchLabels:
+      tier: data
+  retention:
+    keepLast: 4
+  suspend: false

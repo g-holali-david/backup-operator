@@ -1,0 +1,18 @@
+# Binaries
+bin/
+manager
+*.exe
+
+# Coverage
+coverage.out
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kubebuilder
+testbin/

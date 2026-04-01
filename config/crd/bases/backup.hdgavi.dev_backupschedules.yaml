@@ -1,0 +1,118 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backupschedules.backup.hdgavi.dev
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.15.0
+spec:
+  group: backup.hdgavi.dev
+  names:
+    kind: BackupSchedule
+    listKind: BackupScheduleList
+    plural: backupschedules
+    singular: backupschedule
+    shortNames:
+      - bs
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Schedule
+          type: string
+          jsonPath: .spec.schedule
+        - name: Last Backup
+          type: date
+          jsonPath: .status.lastBackup
+        - name: Next Backup
+          type: date
+          jsonPath: .status.nextBackup
+        - name: Backups
+          type: integer
+          jsonPath: .status.backupCount
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          description: BackupSchedule is the Schema for the backupschedules API.
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              required:
+                - schedule
+                - pvcSelector
+              properties:
+                schedule:
+                  type: string
+                  description: Cron schedule expression.
+                  pattern: '^(\S+\s){4}\S+$'
+                pvcSelector:
+                  type: object
+                  description: Label selector for PVCs to backup.
+                  properties:
+                    matchLabels:
+                      type: object
+                      additionalProperties:
+                        type: string
+                    matchExpressions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          key:
+                            type: string
+                          operator:
+                            type: string
+                          values:
+                            type: array
+                            items:
+                              type: string
+                retention:
+                  type: object
+                  properties:
+                    keepLast:
+                      type: integer
+                      minimum: 1
+                      default: 7
+                storageClass:
+                  type: string
+                suspend:
+                  type: boolean
+            status:
+              type: object
+              properties:
+                lastBackup:
+                  type: string
+                  format: date-time
+                nextBackup:
+                  type: string
+                  format: date-time
+                backupCount:
+                  type: integer
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      reason:
+                        type: string
+                      message:
+                        type: string
+                      lastTransitionTime:
+                        type: string
+                        format: date-time

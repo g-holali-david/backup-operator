@@ -1,0 +1,2 @@
+{{/* Install the CRD */}}
+{{ .Files.Get "crds/backup.hdgavi.dev_backupschedules.yaml" }}
